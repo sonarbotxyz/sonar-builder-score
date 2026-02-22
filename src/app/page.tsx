@@ -3,162 +3,86 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const EXAMPLE_SCORES = [
-  {
-    label: "Legend",
-    score: 934,
-    grade: "S",
-    color: "#FFD700",
-    addr: "0x1a2b...f3e4",
-  },
-  {
-    label: "Builder",
-    score: 621,
-    grade: "A",
-    color: "#0052FF",
-    addr: "0x5c6d...a7b8",
-  },
-  {
-    label: "Newcomer",
-    score: 147,
-    grade: "D",
-    color: "#6B7280",
-    addr: "0x9e0f...c1d2",
-  },
-];
-
-export default function Home() {
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+export default function SonarBuilderLanding() {
+  const [walletInput, setWalletInput] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleScoreSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = input.trim();
-    if (!trimmed) return;
-
-    const isAddress = /^0x[a-fA-F0-9]{40}$/.test(trimmed);
-    const isENS = trimmed.endsWith(".eth");
-    if (!isAddress && !isENS) {
-      setError("Enter a valid wallet address (0x...) or ENS name (.eth)");
-      return;
+    if (walletInput.trim()) {
+      router.push(`/score/${encodeURIComponent(walletInput.trim())}`);
     }
-
-    setError("");
-    setLoading(true);
-    router.push(`/score/${encodeURIComponent(trimmed)}`);
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-6">
-      <div className="max-w-2xl w-full text-center">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4">
-          What&apos;s your Base
-          <br />
-          <span className="text-base-blue">Builder Score?</span>
+    <div className="min-h-screen bg-[#080810] text-white font-sans selection:bg-[#0052FF]/30">
+      <nav className="flex justify-between items-center px-6 py-5 border-b border-white/5">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full border-2 border-[#0052FF] flex items-center justify-center">
+            <div className="w-2 h-2 bg-[#0052FF] rounded-full shadow-[0_0_8px_#0052FF]" />
+          </div>
+          <span className="font-semibold tracking-wide text-sm">Sonar Builder Score</span>
+        </div>
+        <a href="/leaderboard" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Leaderboard</a>
+      </nav>
+      <main className="max-w-5xl mx-auto px-6 pt-32 pb-24 text-center">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white leading-tight">
+          What&apos;s your Base <br className="hidden md:block" />
+          <span className="text-[#0052FF]">Builder Score</span>?
         </h1>
-
-        <p className="text-lg text-white/50 mb-10 max-w-lg mx-auto">
-          Enter any wallet. We analyze on-chain activity, contracts deployed,
-          and ecosystem contributions.
+        <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+          Enter any wallet. We analyze on-chain activity, contracts deployed, and ecosystem contributions.
         </p>
-
-        {/* Input */}
-        <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto">
-          <div className="relative">
+        <form onSubmit={handleScoreSubmit} className="max-w-xl mx-auto mb-6">
+          <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                setError("");
-              }}
+              value={walletInput}
+              onChange={(e) => setWalletInput(e.target.value)}
               placeholder="0x... or vitalik.eth"
-              className="w-full h-14 pl-5 pr-44 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/30 text-base focus:outline-none focus:border-base-blue/50 focus:ring-2 focus:ring-base-blue/20 transition-all"
-              disabled={loading}
+              className="flex-1 bg-[#0d0d16] border border-white/10 rounded-lg px-5 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#0052FF] focus:ring-1 focus:ring-[#0052FF] transition-all font-mono text-sm"
+              required
             />
-            <button
-              type="submit"
-              disabled={loading || !input.trim()}
-              className="absolute right-2 top-2 h-10 px-5 rounded-xl bg-base-blue hover:bg-base-blue-dark text-white font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Scoring
-                </span>
-              ) : (
-                "Score this wallet"
-              )}
+            <button type="submit" className="bg-[#0052FF] hover:bg-[#0040cc] text-white font-semibold px-8 py-4 rounded-lg transition-colors whitespace-nowrap">
+              Score this wallet
             </button>
           </div>
-          {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
         </form>
-
-        <p className="mt-3 text-xs text-white/30">Free to check any wallet</p>
-
-        {/* Example Score Cards */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl mx-auto">
-          {EXAMPLE_SCORES.map((ex) => (
-            <div
-              key={ex.label}
-              className="rounded-2xl border border-white/6 bg-white/[0.02] p-5 text-center"
-            >
-              <div
-                className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border-2"
-                style={{ borderColor: ex.color }}
-              >
-                <span className="text-2xl font-extrabold text-white">
-                  {ex.score}
-                </span>
-              </div>
-              <div
-                className="text-xs font-bold uppercase tracking-wider mb-1"
-                style={{ color: ex.color }}
-              >
-                {ex.label}
-              </div>
-              <div className="text-[11px] text-white/30 font-mono">
-                {ex.addr}
-              </div>
-              <button className="mt-3 text-[11px] text-white/40 hover:text-white/60 transition-colors">
-                Share on X &rarr;
-              </button>
+        <p className="text-sm text-gray-500 mb-24">Free to check any wallet</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="bg-[#0d0d16] border border-white/5 rounded-xl p-8 flex flex-col items-center text-center hover:border-white/10 transition-colors">
+            <div className="w-28 h-28 rounded-full border-[3px] border-[#FFD700] flex items-center justify-center mb-6">
+              <span className="text-3xl font-bold text-white tracking-tighter">934</span>
             </div>
-          ))}
+            <h3 className="text-[#FFD700] font-semibold text-lg tracking-wide uppercase mb-1">Legend</h3>
+            <p className="text-gray-500 font-mono text-sm mb-6">0x71C...976F</p>
+            <button className="text-sm font-medium text-gray-400 hover:text-white transition-colors group">Share on X <span className="group-hover:translate-x-1 inline-block transition-transform">→</span></button>
+          </div>
+          <div className="bg-[#0d0d16] border border-white/5 rounded-xl p-8 flex flex-col items-center text-center hover:border-white/10 transition-colors">
+            <div className="w-28 h-28 rounded-full border-[3px] border-[#0052FF] flex items-center justify-center mb-6">
+              <span className="text-3xl font-bold text-white tracking-tighter">621</span>
+            </div>
+            <h3 className="text-[#0052FF] font-semibold text-lg tracking-wide uppercase mb-1">Builder</h3>
+            <p className="text-gray-500 font-mono text-sm mb-6">0x892...3F4A</p>
+            <button className="text-sm font-medium text-gray-400 hover:text-white transition-colors group">Share on X <span className="group-hover:translate-x-1 inline-block transition-transform">→</span></button>
+          </div>
+          <div className="bg-[#0d0d16] border border-white/5 rounded-xl p-8 flex flex-col items-center text-center hover:border-white/10 transition-colors">
+            <div className="w-28 h-28 rounded-full border-[3px] border-gray-500 flex items-center justify-center mb-6">
+              <span className="text-3xl font-bold text-white tracking-tighter">147</span>
+            </div>
+            <h3 className="text-gray-400 font-semibold text-lg tracking-wide uppercase mb-1">Newcomer</h3>
+            <p className="text-gray-500 font-mono text-sm mb-6">0x1A4...B920</p>
+            <button className="text-sm font-medium text-gray-400 hover:text-white transition-colors group">Share on X <span className="group-hover:translate-x-1 inline-block transition-transform">→</span></button>
+          </div>
         </div>
-
-        {/* Leaderboard teaser */}
-        <div className="mt-12">
-          <a
-            href="/leaderboard"
-            className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-base-blue transition-colors"
-          >
-            Top builders on Base this week
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </a>
+        <a href="/leaderboard" className="text-[#0052FF] hover:text-[#0040cc] text-sm font-semibold inline-flex items-center gap-1 group transition-colors">Top builders on Base this week <span className="group-hover:translate-x-1 transition-transform">→</span></a>
+      </main>
+      <footer className="border-t border-white/5 py-8">
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+          <span>by @0xsonarbot on Base</span>
+          <div className="w-2 h-2 rounded-full bg-[#0052FF] shadow-[0_0_8px_#0052FF]" />
         </div>
-
-        {/* Footer */}
-        <div className="mt-16 text-sm text-white/20">
-          by{" "}
-          <a
-            href="https://twitter.com/0xsonarbot"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/30 hover:text-white/60 transition-colors"
-          >
-            @0xsonarbot
-          </a>{" "}
-          on Base
-        </div>
-      </div>
+      </footer>
     </div>
   );
 }

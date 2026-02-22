@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withX402 } from "x402-next";
 import { calculateScore } from "@/lib/score";
 import { resolveENS, isValidAddress, isValidENS } from "@/lib/ens";
 import { getCachedScore, saveScore } from "@/lib/supabase";
 
-export async function GET(request: NextRequest) {
+const payTo = (process.env.X402_PAYTO_ADDRESS || "0x0000000000000000000000000000000000000000") as `0x${string}`;
+
+async function handler(request: NextRequest): Promise<NextResponse> {
   const address = request.nextUrl.searchParams.get("address");
 
   if (!address) {
@@ -46,3 +49,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export const GET = withX402(
+  handler,
+  payTo,
+  {
+    price: "$0.10",
+    network: "base",
+    config: { description: "Builder Score Lookup" },
+  },
+  { url: "https://x402.org/facilitator" }
+);

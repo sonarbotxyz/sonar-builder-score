@@ -16,16 +16,7 @@ export default function SonarBuilderLanding() {
 
   return (
     <div className="min-h-screen bg-[#080810] text-white font-sans selection:bg-[#0052FF]/30">
-      <nav className="flex justify-between items-center px-6 py-5 border-b border-white/5">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full border-2 border-[#0052FF] flex items-center justify-center">
-            <div className="w-2 h-2 bg-[#0052FF] rounded-full shadow-[0_0_8px_#0052FF]" />
-          </div>
-          <span className="font-semibold tracking-wide text-sm">Sonar Builder Score</span>
-        </div>
-        <a href="/leaderboard" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Leaderboard</a>
-      </nav>
-      <main className="max-w-5xl mx-auto px-6 pt-32 pb-24 text-center">
+      <main className="max-w-5xl mx-auto px-6 pt-20 pb-24 text-center">
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white leading-tight">
           What&apos;s your Base <br className="hidden md:block" />
           <span className="text-[#0052FF]">Builder Score</span>?
